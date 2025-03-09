@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Contratacion{% endblock %}
+
+{% block content %}
+<h1>Contratacion</h1>
+<form method="post">
+    {% csrf_token %}
+    
+    {{ form.as_p }}
+    <div class="field">
+        <strong>Duración en meses:</strong>
+        <span>{{ form.instance.duracion_meses }}</span>
+    </div>
+    <div class="field">
+        <strong>Saldo de días:</strong>
+        <span id="saldo_dias">{{ form.instance.saldo_dias }}</span>
+    </div>
+    {% if contratacion %}
+    <div class="field">
+        <strong>Fecha de creación:</strong>
+        <span>{{ contratacion.fecha_creacion }}</span>
+    </div>
+    <div class="field">
+        <strong>Fecha de última modificación:</strong>
+        <span>{{ contratacion.fecha_modificacion }}</span>
+    </div>
+    {% endif %}
+    <button type="submit">Guardar</button>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInicioInput = document.querySelector('input[name="fecha_inicio"]');
+        const fechaFinalizacionInput = document.querySelector('input[name="fecha_finalizacion"]');
+        const saldoDiasSpan = document.getElementById('saldo_dias');
+
+        function calculateSaldoDias() {
+            const fechaInicio = new Date(fechaInicioInput.value);
+            const fechaFinalizacion = new Date(fechaFinalizacionInput.value);
+            if (fechaInicio && fechaFinalizacion) {
+                const timeDiff = fechaFinalizacion - fechaInicio;
+                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                saldoDiasSpan.textContent = daysDiff;
+            } else {
+                saldoDiasSpan.textContent = 0;
+            }
+        }
+
+        fechaInicioInput.addEventListener('change', calculateSaldoDias);
+        fechaFinalizacionInput.addEventListener('change', calculateSaldoDias);
+    });
+</script>
+{% endblock %}

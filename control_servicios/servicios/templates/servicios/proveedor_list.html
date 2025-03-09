@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Proveedores{% endblock %}
+
+{% block content %}
+<h1>Proveedores</h1>
+<form method="get" class="form-inline mb-3">
+    <input type="text" name="q" value="{{ query }}" class="form-control mr-2" placeholder="Buscar...">
+    <select name="order_by" class="form-control mr-2">
+        <option value="nombre" {% if order_by == 'nombre' %}selected{% endif %}>Nombre</option>
+        <!-- Add other attributes here -->
+    </select>
+    <select name="direction" class="form-control mr-2">
+        <option value="asc" {% if direction == 'asc' %}selected{% endif %}>Ascendente</option>
+        <option value="desc" {% if direction == 'desc' %}selected{% endif %}>Descendente</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+<a href="{% url 'proveedor_create' %}">Nuevo Proveedor</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for proveedor in page_obj %}
+        <tr>
+            <td>{{ proveedor.nombre }}</td>
+            <td>
+                <a href="{% url 'proveedor_update' proveedor.pk %}">Editar</a> - 
+                <a href="{% url 'proveedor_delete' proveedor.pk %}">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?{% if query %}q={{ query }}&{% endif %}page=1">&laquo; primero</a>
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">siguiente</a>
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">último &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Contratacion{% endblock %}
+
+{% block content %}
+<h1>Eliminar Contratacion</h1>
+<p>¿Está seguro de que desea eliminar la contratacion "{{ contratacion.nro_ultima_orden_compra }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Eliminar</button>
+</form>
+<a href="{% url 'contratacion_list' %}">Cancelar</a>
+{% endblock %}

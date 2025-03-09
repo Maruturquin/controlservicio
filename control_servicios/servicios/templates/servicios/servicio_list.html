@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block title %}Servicios{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Servicios</h1>
+<form method="get" class="form-inline mb-3">
+    <input type="text" name="q" value="{{ query|default_if_none:'' }}" class="form-control mr-2" placeholder="Buscar...">
+    <input type="date" name="fecha_desde" value="{{ fecha_desde|default_if_none:'' }}" class="form-control mr-2">
+    <input type="date" name="fecha_hasta" value="{{ fecha_hasta|default_if_none:'' }}" class="form-control mr-2">
+    <select name="order_by" class="form-control mr-2">
+        <option value="nombre" {% if order_by == 'nombre' %}selected{% endif %}>Nombre</option>
+        <option value="fecha_desde" {% if order_by == 'fecha_desde' %}selected{% endif %}>Fecha Desde</option>
+        <option value="fecha_hasta" {% if order_by == 'fecha_hasta' %}selected{% endif %}>Fecha Hasta</option>
+        <option value="expediente" {% if order_by == 'expediente' %}selected{% endif %}>Expediente</option>
+        <option value="detalle" {% if order_by == 'detalle' %}selected{% endif %}>Detalle</option>
+        <option value="tipo_tramite" {% if order_by == 'tipo_tramite' %}selected{% endif %}>Tipo de Trámite</option>
+        <option value="estado_tramite" {% if order_by == 'estado_tramite' %}selected{% endif %}>Estado de Trámite</option>
+        <option value="proveedor" {% if order_by == 'proveedor' %}selected{% endif %}>Proveedor</option>
+    </select>
+    <select name="direction" class="form-control mr-2">
+        <option value="asc" {% if direction == 'asc' %}selected{% endif %}>Ascendente</option>
+        <option value="desc" {% if direction == 'desc' %}selected{% endif %}>Descendente</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+<a href="{% url 'servicio_create' %}" class="btn btn-primary mb-3">Nuevo Servicio</a>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Fecha Desde</th>
+                <th>Fecha Hasta</th>
+                <th>Expediente</th>
+                <th>Detalle</th>
+                <th>Tipo de Trámite</th>
+                <th>Estado de Trámite</th>
+                <th>Proveedor</th>
+                <th>Vencimiento</th>
+                <th>Fecha Inicio Trámite</th>
+                <th>Fecha Pago</th>
+                <th>Duración Trámite</th>
+                <th>Pagado</th>
+                <th>Facturas</th>
+                <th>Monto</th>
+                <th>Monto Total</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for servicio in page_obj %}
+            <tr>
+                <td>{{ servicio.nombre }}</td>
+                <td>{{ servicio.fecha_desde }}</td>
+                <td>{{ servicio.fecha_hasta }}</td>
+                <td>{{ servicio.expediente }}</td>
+                <td>{{ servicio.detalle }}</td>
+                <td>{{ servicio.tipo_tramite }}</td>
+                <td>{{ servicio.estado_tramite }}</td>
+                <td>{{ servicio.proveedor }}</td>
+                <td>{{ servicio.saldo_dias|default:servicio.vencimiento }}</td>
+                <td>{{ servicio.fecha_inicio_tramite }}</td>
+                <td>{{ servicio.fecha_pago }}</td>
+                <td>{{ servicio.duracion_tramite }}</td>
+                <td>
+                    {% if servicio.pagado %}
+                        <span class="text-success">Pagado</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <strong>Facturas:</strong>
+                    <ul>
+                        {% for factura in servicio.factura_set.all %}
+                            <li>{{ factura.nro_factura }}</li>  <!-- Cambié `factura.numero` a `factura.nro_factura` -->
+                        {% empty %}
+                            <li>No hay facturas asociadas</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                
+                <td>
+                    <strong>Montos:</strong>
+                    <ul>
+                        {% for factura in servicio.factura_set.all %}
+                            <li>${{ factura.monto_unitario }}</li>
+                        {% empty %}
+                            <li>No hay montos asociados</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>${{ servicio.monto_total }}</td>
+                <td>
+                    <a href="{% url 'servicio_update' servicio.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?{% if query %}q={{ query }}&{% endif %}page=1">&laquo; primero</a>
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">siguiente</a>
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">último &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

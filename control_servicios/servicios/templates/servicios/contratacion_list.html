@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block title %}Contrataciones{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Contrataciones</h1>
+<form method="get" class="form-inline mb-3">
+    <input type="text" name="q" value="{{ query }}" class="form-control mr-2" placeholder="Buscar...">
+    <input type="date" name="fecha_inicio" value="{{ fecha_inicio }}" class="form-control mr-2">
+    <input type="date" name="fecha_finalizacion" value="{{ fecha_finalizacion }}" class="form-control mr-2">
+    <select name="order_by" class="form-control mr-2">
+        <option value="nombre" {% if order_by == 'nombre' %}selected{% endif %}>Nombre</option>
+        <option value="nro_ultima_orden_compra" {% if order_by == 'nro_ultima_orden_compra' %}selected{% endif %}>Nro Última Orden Compra</option>
+        <option value="duracion_meses" {% if order_by == 'duracion_meses' %}selected{% endif %}>Duración Meses</option>
+        <option value="fecha_inicio" {% if order_by == 'fecha_inicio' %}selected{% endif %}>Fecha Inicio</option>
+        <option value="fecha_finalizacion" {% if order_by == 'fecha_finalizacion' %}selected{% endif %}>Fecha Finalización</option>
+        <option value="saldo_dias" {% if order_by == 'saldo_dias' %}selected{% endif %}>Saldo Días</option>
+        <option value="nro_expediente_contratacion" {% if order_by == 'nro_expediente_contratacion' %}selected{% endif %}>Nro Expediente Contratación</option>
+        <option value="vigente" {% if order_by == 'vigente' %}selected{% endif %}>Vigente</option>
+        <option value="en_tramite" {% if order_by == 'en_tramite' %}selected{% endif %}>En Trámite</option>
+        <option value="estado" {% if order_by == 'estado' %}selected{% endif %}>Estado</option>
+        <option value="sector" {% if order_by == 'sector' %}selected{% endif %}>Sector</option>
+    </select>
+    <select name="direction" class="form-control mr-2">
+        <option value="asc" {% if direction == 'asc' %}selected{% endif %}>Ascendente</option>
+        <option value="desc" {% if direction == 'desc' %}selected{% endif %}>Descendente</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+<a href="{% url 'contratacion_create' %}" class="btn btn-primary mb-3">Nueva Contratacion</a>
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Nombre</th>
+            <th>Nro Última Orden Compra</th>
+            <th>Duración Meses</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Finalización</th>
+            <th>Saldo Días</th>
+            <th>Nro Expediente Contratación</th>
+            <th>Vigente</th>
+            <th>En Trámite</th>
+            <th>Estado</th>
+            <th>Sector</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for contratacion in page_obj %}
+        <tr>
+            <td>{{ contratacion.nombre }}</td>
+            <td>{{ contratacion.nro_ultima_orden_compra }}</td>
+            <td>{{ contratacion.duracion_meses }}</td>
+            <td>{{ contratacion.fecha_inicio }}</td>
+            <td>{{ contratacion.fecha_finalizacion }}</td>
+            <td>{{ contratacion.saldo_dias }}</td>
+            <td>{{ contratacion.nro_expediente_contratacion }}</td>
+            <td>{{ contratacion.vigente }}</td>
+            <td>{{ contratacion.en_tramite }}</td>
+            <td>{{ contratacion.estado }}</td>
+            <td>{{ contratacion.sector }}</td>
+            <td>
+                {% if contratacion.near_expiration %}
+                    <div class="alert alert-warning" role="alert">
+                        ¡Quedan menos de 90 días para el vencimiento!
+                    </div>
+                {% endif %}
+                <a href="{% url 'contratacion_update' contratacion.pk %}" class="btn btn-sm btn-warning">Editar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?{% if query %}q={{ query }}&{% endif %}page=1">&laquo; primero</a>
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">siguiente</a>
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">último &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

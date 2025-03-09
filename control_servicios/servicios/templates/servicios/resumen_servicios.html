@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Resumen de Servicios{% endblock %}
+
+{% block content %}
+<h1>Resumen de Servicios</h1>
+
+<section id="total-por-ano">
+    <h2>Total por Año</h2>
+    <ul>
+        {% for item in total_por_ano %}
+        <li>Año {{ item.fecha_desde__year }}: ${{ item.total }}</li>
+        {% endfor %}
+    </ul>
+</section>
+
+<section id="total-por-servicio">
+    <h2>Total por Servicio</h2>
+    <ul>
+        {% for item in total_por_servicio %}
+        <li>{{ item.nombre__nombre }}: ${{ item.total }}</li>
+        {% endfor %}
+    </ul>
+</section>
+
+<section id="cantidad-por-estado">
+    <h2>Cantidad por Estado</h2>
+    <ul>
+        {% for item in cantidad_por_estado %}
+        <li>{{ item.estado_tramite__nombre }}: {{ item.cantidad }} servicios</li>
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}

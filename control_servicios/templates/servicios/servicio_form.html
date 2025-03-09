@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{% if form.instance.pk %}Editar Servicio{% else %}Crear Servicio{% endif %}</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <h2>Facturas</h2>
+    {{ formset.management_form }}
+    <table class="table" id="factura-table">
+      <thead>
+        <tr>
+          <th>Nro factura</th>
+          <th>Monto unitario</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in formset %}
+        <tr>
+          <td>{{ form.id }}{{ form.nro_factura }}</td>
+          <td>{{ form.monto_unitario }}</td>
+          <td>{{ form.DELETE }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary" id="add-factura">Agregar Factura</button>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{% url 'servicio_list' %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+
+  <script>
+    document.getElementById('add-factura').addEventListener('click', function() {
+        var formset = document.getElementById('factura-table').getElementsByTagName('tbody')[0];
+        var newForm = formset.children[0].cloneNode(true);
+        var formCount = document.getElementById('id_factura_set-TOTAL_FORMS');
+        var newFormNum = parseInt(formCount.value);
+        formCount.value = newFormNum + 1;
+
+        newForm.innerHTML = newForm.innerHTML.replace(/factura_set-(\d+)-/g, 'factura_set-' + newFormNum + '-');
+        formset.appendChild(newForm);
+
+        // Clear the values of the cloned form
+        var inputs = newForm.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].value = '';
+        }
+    });
+  </script>
+{% endblock %}

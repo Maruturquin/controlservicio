@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Estados de Trámite{% endblock %}
+
+{% block content %}
+<h1>Estados de Trámite</h1>
+<a href="{% url 'estado_tramite_create' %}">Nuevo Estado de Trámite</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for estado in page_obj %}
+        <tr>
+            <td>{{ estado.nombre }}</td>
+            <td>
+                <a href="{% url 'estado_tramite_update' estado.pk %}">Editar</a> - 
+                <a href="{% url 'estado_tramite_delete' estado.pk %}">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?{% if query %}q={{ query }}&{% endif %}page=1">&laquo; primero</a>
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">siguiente</a>
+            <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">último &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}
